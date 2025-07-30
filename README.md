@@ -1,98 +1,313 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Movie Hub API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A comprehensive movie management API built with NestJS, featuring JWT authentication, MongoDB integration, and S3 file management.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Features
 
-## Description
+- **Authentication**: JWT-based authentication with refresh tokens
+- **Movie Management**: Full CRUD operations with pagination
+- **File Management**: S3 integration for file uploads and management
+- **User Management**: User profiles and account management
+- **API Documentation**: Complete Swagger/OpenAPI documentation
+- **Validation**: Comprehensive input validation and error handling
+- **Security**: JWT authentication, CORS protection, and secure file handling
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 Prerequisites
 
-## Project setup
+- Node.js (v18 or higher)
+- MongoDB
+- AWS S3 (for file storage)
+- npm or yarn
 
-```bash
-$ npm install
+## 🛠️ Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd nest-movie
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Configuration**
+   Create a `.env` file in the root directory:
+   ```env
+   # Database
+   MONGO_URI=mongodb://localhost:27017/movie-hub
+   
+   # JWT
+   JWT_SECRET=your-super-secret-jwt-key
+   JWT_REFRESH_SECRET=your-super-secret-refresh-key
+   JWT_EXPIRES_IN=15m
+   JWT_REFRESH_EXPIRES_IN=7d
+   
+   # AWS S3
+   S3_REGION=us-east-1
+   S3_ACCESS_KEY_ID=your-s3-access-key
+   S3_SECRET_ACCESS_KEY=your-s3-secret-key
+   S3_BUCKET_NAME=your-s3-bucket-name
+   
+   # Application
+   PORT=3000
+   NODE_ENV=development
+   ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+   ```
+
+4. **Start the application**
+   ```bash
+   # Development mode
+   npm run start:dev
+   
+   # Production mode
+   npm run build
+   npm run start:prod
+   ```
+
+## 📚 API Documentation
+
+The API documentation is available via Swagger UI at:
+- **Development**: http://localhost:3000/api
+- **Production**: https://your-domain.com/api
+
+### Interactive Documentation Features
+
+- **Try it out**: Test endpoints directly from the browser
+- **Authentication**: JWT token management with persistent authorization
+- **Request/Response Examples**: Detailed examples for all endpoints
+- **Error Codes**: Comprehensive error documentation
+- **Schema Validation**: Automatic validation of request/response schemas
+
+## 🔐 Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require authentication.
+
+### Authentication Flow
+
+1. **Login**: POST `/auth/login`
+   ```json
+   {
+     "email": "user@example.com",
+     "password": "password123",
+     "rememberMe": false
+   }
+   ```
+
+2. **Use Access Token**: Include in Authorization header
+   ```
+   Authorization: Bearer <your-jwt-token>
+   ```
+
+3. **Refresh Token**: POST `/auth/refresh` (automatic via cookies)
+
+4. **Logout**: POST `/auth/logout`
+
+## 📖 API Endpoints
+
+### System Endpoints
+- `GET /` - Health check
+- `GET /info` - API information
+
+### Authentication Endpoints
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Refresh access token
+- `POST /auth/logout` - User logout
+- `GET /auth/profile` - Get user profile
+
+### Movie Management Endpoints
+- `GET /movies` - Get all movies (paginated)
+- `POST /movies` - Create a new movie
+- `PATCH /movies/:id` - Update a movie
+
+### File Management Endpoints
+- `POST /s3/upload-url` - Get signed URL for file upload
+- `DELETE /s3/files/:key` - Delete file from S3
+
+## 🎬 Movie Management
+
+### Movie Schema
+```typescript
+{
+  title: string;           // Movie title
+  publishingYear: number;  // Release year
+  posterUrl: string;       // Poster image URL
+  createdAt: Date;         // Creation timestamp
+  updatedAt: Date;         // Last update timestamp
+}
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+### Pagination
+Movie endpoints support pagination:
+```
+GET /movies?page=1&limit=10
 ```
 
-## Run tests
+Response includes:
+- `movies`: Array of movie objects
+- `page`: Current page number
+- `limit`: Items per page
+- `total`: Total number of movies
+- `totalPages`: Total number of pages
 
-```bash
-# unit tests
-$ npm run test
+## 📁 File Management
 
-# e2e tests
-$ npm run test:e2e
+### S3 Integration
+The API integrates with AWS S3 for file storage:
 
-# test coverage
-$ npm run test:cov
+1. **Get Upload URL**: Request a pre-signed URL for direct S3 upload
+2. **Upload File**: Upload directly to S3 using the signed URL
+3. **Delete File**: Remove files from S3 storage
+
+### File Upload Flow
+```javascript
+// 1. Get signed URL
+const response = await fetch('/s3/upload-url', {
+  method: 'POST',
+  headers: { 'Authorization': 'Bearer <token>' },
+  body: JSON.stringify({
+    fileName: 'movie-poster.jpg',
+    fileType: 'image/jpeg'
+  })
+});
+
+// 2. Upload to S3
+const { url } = await response.json();
+await fetch(url, {
+  method: 'PUT',
+  body: file,
+  headers: { 'Content-Type': 'image/jpeg' }
+});
 ```
 
-## Deployment
+## 🔧 Development
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+### Project Structure
+```
+src/
+├── auth/           # Authentication module
+├── movies/         # Movie management module
+├── s3/            # File management module
+├── user/          # User management module
+├── common/        # Shared schemas and utilities
+├── app.controller.ts
+├── app.module.ts
+└── main.ts
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Available Scripts
+- `npm run start:dev` - Start development server with hot reload
+- `npm run build` - Build the application
+- `npm run start:prod` - Start production server
+- `npm run test` - Run unit tests
+- `npm run test:e2e` - Run end-to-end tests
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
 
-## Resources
+### Testing
+```bash
+# Unit tests
+npm run test
 
-Check out a few resources that may come in handy when working with NestJS:
+# E2E tests
+npm run test:e2e
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Test coverage
+npm run test:cov
+```
 
-## Support
+## 🚀 Deployment
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Environment Variables
+Ensure all required environment variables are set in production:
 
-## Stay in touch
+```env
+MONGO_URI=mongodb://your-mongo-uri
+JWT_SECRET=your-production-jwt-secret
+JWT_REFRESH_SECRET=your-production-refresh-secret
+S3_REGION=your-s3-region
+S3_ACCESS_KEY_ID=your-s3-access-key
+S3_SECRET_ACCESS_KEY=your-s3-secret-key
+S3_BUCKET_NAME=your-s3-bucket
+NODE_ENV=production
+ALLOWED_ORIGINS=https://your-frontend-domain.com
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Docker Deployment
+```dockerfile
+FROM node:18-alpine
 
-## License
+WORKDIR /app
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY dist ./dist
+
+EXPOSE 3000
+
+CMD ["node", "dist/main"]
+```
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Refresh Tokens**: Automatic token refresh mechanism
+- **CORS Protection**: Configurable cross-origin resource sharing
+- **Input Validation**: Comprehensive request validation
+- **Error Handling**: Secure error responses without sensitive data
+- **Rate Limiting**: Built-in request rate limiting
+- **HTTPS**: Production-ready with SSL/TLS support
+
+## 📝 API Response Format
+
+### Success Response
+```json
+{
+  "status": "success",
+  "data": { ... },
+  "message": "Operation completed successfully"
+}
+```
+
+### Error Response
+```json
+{
+  "status": "error",
+  "message": "Error description",
+  "error": "ERROR_CODE",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Check the API documentation at `/api`
+- Review the health check endpoint at `/`
+- Check the API information endpoint at `/info`
+
+## 🔄 Changelog
+
+### v1.0.0
+- Initial release
+- Complete CRUD operations for movies
+- JWT authentication system
+- S3 file management integration
+- Comprehensive Swagger documentation
+- Pagination support
+- Error handling and validation
