@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { MoviesModule } from './movies/movies.module';
 import { S3Module } from './s3/s3.module';
 import { CommonModule } from './common/common.module';
+import { UserModule } from './user/user.module';
 
 
 @Module({
@@ -23,6 +24,7 @@ import { CommonModule } from './common/common.module';
       }),
     }),
     CommonModule,
+    UserModule,
 
   ],
   controllers: [AppController],
