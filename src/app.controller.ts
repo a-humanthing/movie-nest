@@ -84,7 +84,7 @@ export class ApiInfoResponseDto {
 @ApiTags('System')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor() {}
 
   @Get()
   @ApiOperation({
@@ -97,11 +97,12 @@ export class AppController {
     type: HealthCheckResponseDto
   })
   getHealthCheck(): HealthCheckResponseDto {
+    const startTime = process.uptime();
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development'
+      uptime: Math.floor(startTime),
+      environment: process.env.NODE_ENV || 'development',
     };
   }
 
@@ -112,7 +113,7 @@ export class AppController {
   })
   @ApiResponse({
     status: 200,
-    description: 'API information retrieved successfully',
+    description: 'API information',
     type: ApiInfoResponseDto
   })
   getApiInfo(): ApiInfoResponseDto {

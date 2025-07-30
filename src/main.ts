@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +20,8 @@ async function bootstrap() {
     origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
     credentials: true,
   });
+
+  app.use(helmet());
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -58,9 +61,7 @@ async function bootstrap() {
     )
     .addServer(process.env.HOST||'http://localhost:3000')
     .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  
+    const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
@@ -83,8 +84,6 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
   
-  console.log(`🚀 Application is running on: http://localhost:${port}`);
-  console.log(`📚 Swagger documentation available at: http://localhost:${port}/api`);
-}
+  console.log(`🚀 Application is running on: http://localhost:${port}`)}
 
 bootstrap();
