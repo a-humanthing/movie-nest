@@ -12,42 +12,49 @@ async function bootstrap() {
     stopAtFirstError: true,
     transform: true,
     whitelist: true,
-    forbidNonWhitelisted: true
+    forbidNonWhitelisted: true,
+    errorHttpStatusCode: 422
   }));
 
   // Enable CORS
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  app.use(helmet());
+  // Security middleware
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+      },
+    },
+  }));
 
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Movie Hub API')
     .setDescription(`
-      A comprehensive movie management API built with NestJS.
+      A production-ready movie management API built with NestJS.
       
       ## Features
-      - **Authentication**: JWT-based authentication with refresh tokens
-      - **Movie Management**: CRUD operations for movies with pagination
-      - **File Management**: S3 integration for file uploads and management
-      - **User Management**: User profiles and account management
+      - JWT-based authentication with refresh tokens
+      - CRUD operations for movies with pagination
+      - S3 integration for file management
+      - User management and profiles
       
       ## Authentication
-      Most endpoints require authentication. Include the JWT token in the Authorization header:
-      \`Authorization: Bearer <your-jwt-token>\`
-      
-      
-      ## Error Handling
-      The API returns standard HTTP status codes and detailed error messages.
+      Include JWT token in Authorization header: \`Bearer <token>\`
     `)
     .setVersion('1.0.0')
-    .addTag('System', 'System health and information endpoints')
-    .addTag('Authentication', 'User authentication and authorization endpoints')
+    .addTag('System', 'Health check and API information')
+    .addTag('Authentication', 'User authentication endpoints')
     .addTag('Movies', 'Movie management endpoints')
-    .addTag('File Management', 'File upload and management endpoints')
+    .addTag('File Management', 'S3 file operations')
     .addBearerAuth(
       {
         type: 'http',
@@ -57,9 +64,9 @@ async function bootstrap() {
         description: 'Enter JWT token',
         in: 'header',
       },
-      'JWT-auth', // This name here is important for @ApiBearerAuth() decorator
+      'JWT-auth',
     )
-    .addServer(process.env.HOST||'http://localhost:3000')
+    .addServer(process.env.HOST || 'http://localhost:3000')
     .build();
     const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
@@ -84,6 +91,8 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
   
-  console.log(`🚀 Application is running on: http://localhost:${port}`)}
+  console.log(`🚀 Movie Hub API is running on: http://localhost:${port}`);
+  console.log(`📚 API Documentation: http://localhost:${port}/api`);
+}
 
 bootstrap();

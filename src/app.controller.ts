@@ -1,5 +1,4 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiProperty } from '@nestjs/swagger';
 
 export class HealthCheckResponseDto {

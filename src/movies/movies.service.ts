@@ -44,19 +44,19 @@ export class MoviesService {
     return updated;
   }
 
-  async findOne(id: string){
-    const movie = await this.movieModel.findById(id)
-    if(!movie){
-      throw new NotFoundException("Movie Not found")
+  async findOne(id: string): Promise<MovieResponse> {
+    const movie = await this.movieModel.findById(id);
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
     }
-    return movie
+    return movie;
   }
 
-  async deleteOne(id:string){
-    const movie = await this.movieModel.findByIdAndDelete(id)
-    if(!movie){
-      throw new NotFoundException("Movie Not found")
+  async deleteOne(id: string): Promise<{ message: string }> {
+    const movie = await this.movieModel.findByIdAndDelete(id);
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
     }
-    return true
+    return { message: 'Movie deleted successfully' };
   }
 }

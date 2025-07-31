@@ -90,7 +90,7 @@ import {
       await this.usersService.updateRefreshToken(userId, null);
     }
   
-    async validateUser(userId: string): Promise<any> {
+    async validateUser(userId: string): Promise<Omit<any, 'password' | 'refreshToken'> | null> {
       const user = await this.usersService.findById(userId);
       if (!user || !user.isActive) {
         return null;
