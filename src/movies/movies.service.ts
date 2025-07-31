@@ -43,4 +43,20 @@ export class MoviesService {
     }
     return updated;
   }
+
+  async findOne(id: string){
+    const movie = await this.movieModel.findById(id)
+    if(!movie){
+      throw new NotFoundException("Movie Not found")
+    }
+    return movie
+  }
+
+  async deleteOne(id:string){
+    const movie = await this.movieModel.findByIdAndDelete(id)
+    if(!movie){
+      throw new NotFoundException("Movie Not found")
+    }
+    return true
+  }
 }

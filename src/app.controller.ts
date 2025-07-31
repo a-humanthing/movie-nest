@@ -3,74 +3,36 @@ import { AppService } from './app.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiProperty } from '@nestjs/swagger';
 
 export class HealthCheckResponseDto {
-  @ApiProperty({
-    description: 'Health status of the API',
-    example: 'ok'
-  })
+  @ApiProperty({ example: 'ok' })
   status: string;
 
-  @ApiProperty({
-    description: 'Current timestamp',
-    example: '2024-01-15T10:30:00.000Z'
-  })
+  @ApiProperty({ example: '2024-01-15T10:30:00.000Z' })
   timestamp: string;
 
-  @ApiProperty({
-    description: 'API uptime in seconds',
-    example: 3600
-  })
+  @ApiProperty({ example: 3600 })
   uptime: number;
 
-  @ApiProperty({
-    description: 'Current environment',
-    example: 'development'
-  })
+  @ApiProperty({ example: 'development' })
   environment: string;
 }
 
 export class ApiInfoResponseDto {
-  @ApiProperty({
-    description: 'API name',
-    example: 'Movie Hub API'
-  })
+  @ApiProperty({ example: 'Movie Hub API' })
   name: string;
 
-  @ApiProperty({
-    description: 'API version',
-    example: '1.0.0'
-  })
+  @ApiProperty({ example: '1.0.0' })
   version: string;
 
-  @ApiProperty({
-    description: 'API description',
-    example: 'A comprehensive movie management API built with NestJS'
-  })
+  @ApiProperty({ example: 'A comprehensive movie management API built with NestJS' })
   description: string;
 
   @ApiProperty({
-    description: 'Available API endpoints',
     type: 'object',
     properties: {
-      auth: {
-        type: 'string',
-        description: 'Authentication endpoints',
-        example: '/auth - Authentication endpoints (login, logout, refresh, profile)'
-      },
-      movies: {
-        type: 'string',
-        description: 'Movie management endpoints',
-        example: '/movies - Movie management endpoints (CRUD operations)'
-      },
-      s3: {
-        type: 'string',
-        description: 'File management endpoints',
-        example: '/s3 - File management endpoints (upload, delete)'
-      },
-      swagger: {
-        type: 'string',
-        description: 'API documentation',
-        example: '/api - Interactive API documentation'
-      }
+      auth: { type: 'string', example: '/auth - Authentication endpoints' },
+      movies: { type: 'string', example: '/movies - Movie management endpoints' },
+      s3: { type: 'string', example: '/s3 - File management endpoints' },
+      swagger: { type: 'string', example: '/api - Interactive API documentation' }
     }
   })
   endpoints: {
@@ -87,15 +49,8 @@ export class AppController {
   constructor() {}
 
   @Get()
-  @ApiOperation({
-    summary: 'API Health Check',
-    description: 'Check if the API is running and healthy'
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'API is healthy',
-    type: HealthCheckResponseDto
-  })
+  @ApiOperation({ summary: 'API Health Check' })
+  @ApiResponse({ status: 200, type: HealthCheckResponseDto })
   getHealthCheck(): HealthCheckResponseDto {
     const startTime = process.uptime();
     return {
@@ -107,15 +62,8 @@ export class AppController {
   }
 
   @Get('info')
-  @ApiOperation({
-    summary: 'API Information',
-    description: 'Get information about the API and available endpoints'
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'API information',
-    type: ApiInfoResponseDto
-  })
+  @ApiOperation({ summary: 'API Information' })
+  @ApiResponse({ status: 200, type: ApiInfoResponseDto })
   getApiInfo(): ApiInfoResponseDto {
     return {
       name: 'Movie Hub API',

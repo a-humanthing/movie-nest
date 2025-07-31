@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto, UpdateMovieDto, MovieResponseDto, PaginatedMoviesResponseDto } from './dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
@@ -12,100 +12,51 @@ export class MoviesController {
     constructor(private moviesService: MoviesService) {}
 
     @Get()
-    @ApiOperation({ 
-        summary: 'Get all movies',
-        description: 'Retrieve a paginated list of all movies. Requires authentication.'
-    })
-    @ApiQuery({
-        name: 'page',
-        required: false,
-        description: 'Page number for pagination (starts from 1)',
-        example: 1,
-        type: Number
-    })
-    @ApiQuery({
-        name: 'limit',
-        required: false,
-        description: 'Number of movies per page (default: 10)',
-        example: 10,
-        type: Number
-    })
-    @ApiResponse({ 
-        status: 200, 
-        description: 'Successfully retrieved movies',
-        type: PaginatedMoviesResponseDto
-    })
-    @ApiResponse({ 
-        status: 401, 
-        description: 'Unauthorized - Invalid or missing authentication token'
-    })
-    @ApiResponse({ 
-        status: 500, 
-        description: 'Internal server error'
-    })
+    @ApiOperation({ summary: 'Get all movies' })
+    @ApiQuery({ name: 'page', required: false, example: 1, type: Number })
+    @ApiQuery({ name: 'limit', required: false, example: 10, type: Number })
+    @ApiResponse({ status: 200, type: PaginatedMoviesResponseDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
     getAll(@Query('page') page: number, @Query('limit') limit: number) {
         return this.moviesService.findAll(page, limit);
     }
 
     @Post()
-    @ApiOperation({ 
-        summary: 'Create a new movie',
-        description: 'Create a new movie with title, publishing year, and poster URL. Requires authentication.'
-    })
-    @ApiResponse({ 
-        status: 201, 
-        description: 'Movie created successfully',
-        type: MovieResponseDto
-    })
-    @ApiResponse({ 
-        status: 400, 
-        description: 'Bad request - Invalid input data'
-    })
-    @ApiResponse({ 
-        status: 401, 
-        description: 'Unauthorized - Invalid or missing authentication token'
-    })
-    @ApiResponse({ 
-        status: 500, 
-        description: 'Internal server error'
-    })
+    @ApiOperation({ summary: 'Create a new movie' })
+    @ApiResponse({ status: 201, type: MovieResponseDto })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
     createMovie(@Body() dto: CreateMovieDto) {
         return this.moviesService.create(dto);
     }
 
+    @Get(':id')
+    @ApiOperation({ summary: 'Get movie by ID' })
+    @ApiParam({ name: 'id', description: 'Movie ID', example: '507f1f77bcf86cd799439011' })
+    @ApiResponse({ status: 200, type: MovieResponseDto })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
+    getMovie(@Param('id') id: string) {
+        return this.moviesService.findOne(id);
+    }
+
     @Patch(':id')
-    @ApiOperation({ 
-        summary: 'Update a movie',
-        description: 'Update an existing movie by ID. Only provided fields will be updated. Requires authentication.'
-    })
-    @ApiParam({
-        name: 'id',
-        description: 'Movie unique identifier',
-        example: '507f1f77bcf86cd799439011',
-        type: String
-    })
-    @ApiResponse({ 
-        status: 200, 
-        description: 'Movie updated successfully',
-        type: MovieResponseDto
-    })
-    @ApiResponse({ 
-        status: 400, 
-        description: 'Bad request - Invalid input data'
-    })
-    @ApiResponse({ 
-        status: 401, 
-        description: 'Unauthorized - Invalid or missing authentication token'
-    })
-    @ApiResponse({ 
-        status: 404, 
-        description: 'Movie not found'
-    })
-    @ApiResponse({ 
-        status: 500, 
-        description: 'Internal server error'
-    })
+    @ApiOperation({ summary: 'Update a movie' })
+    @ApiParam({ name: 'id', description: 'Movie ID', example: '507f1f77bcf86cd799439011' })
+    @ApiResponse({ status: 200, type: MovieResponseDto })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
     updateMovie(@Param('id') id: string, @Body() dto: UpdateMovieDto) {
         return this.moviesService.update(id, dto);
+    }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Delete a movie' })
+    @ApiParam({ name: 'id', description: 'Movie ID', example: '507f1f77bcf86cd799439011' })
+    @ApiResponse({ status: 200, description: 'Movie deleted successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
+    deleteMovie(@Param('id') id: string) {
+        return this.moviesService.deleteOne(id);
     }
 }

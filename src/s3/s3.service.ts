@@ -17,13 +17,13 @@ export class S3Service {
             throw new Error('S3_REGION not found in environment variables');
         }
 
+
         this.client = new S3Client([{
             region: s3_region,
             credentials: {
                 accessKeyId: this.configService.get('S3_ACCESS_KEY_ID'),
                 secretAccessKey: this.configService.get('S3_SECRET_ACCESS_KEY'),
-            },
-            forcePathStyle: true,
+            }
         }]);
 
     }
