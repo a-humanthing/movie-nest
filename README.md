@@ -1,211 +1,112 @@
 # Movie Hub API
 
-A comprehensive movie management API built with NestJS, featuring JWT authentication, MongoDB integration, and S3 file management.
+A production-ready REST API for movie management built with **NestJS**, featuring JWT authentication, MongoDB integration, and AWS S3 file management.
 
-## 🚀 Features
+## 🏗️ Architecture
 
-- **Authentication**: JWT-based authentication with refresh tokens
-- **Movie Management**: Full CRUD operations with pagination
-- **File Management**: S3 integration for file uploads and management
-- **User Management**: User profiles and account management
-- **API Documentation**: Complete Swagger/OpenAPI documentation
-- **Validation**: Comprehensive input validation and error handling
-- **Security**: JWT authentication, CORS protection, and secure file handling
+- **Framework**: NestJS with TypeScript
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT with refresh tokens
+- **File Storage**: Cloudinary with pre-signed URLs
+- **Documentation**: Swagger/OpenAPI
+- **Security**: Helmet, CORS, input validation
+- **Testing**: Jest with unit and e2e tests
 
-## 📋 Prerequisites
+## 🚀 Quick Start
 
-- Node.js (v18 or higher)
-- MongoDB
-- AWS S3 (for file storage)
-- npm or yarn
+```bash
+# Install dependencies
+npm install
 
-## 🛠️ Installation
+# Set up environment variables
+cp .env.example .env
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd nest-movie
-   ```
+# Start development server
+npm run start:dev
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Run tests
+npm run test:ci
+```
 
-3. **Environment Configuration**
-   Create a `.env` file in the root directory:
-   ```env
-   # Database
-   MONGO_URI=mongodb://localhost:27017/movie-hub
-   
-   # JWT
-   JWT_SECRET=your-super-secret-jwt-key
-   JWT_REFRESH_SECRET=your-super-secret-refresh-key
-   JWT_EXPIRES_IN=15m
-   JWT_REFRESH_EXPIRES_IN=7d
-   
-   # AWS S3
-   S3_REGION=us-east-1
-   S3_ACCESS_KEY_ID=your-s3-access-key
-   S3_SECRET_ACCESS_KEY=your-s3-secret-key
-   S3_BUCKET_NAME=your-s3-bucket-name
-   
-   # Application
-   PORT=3000
-   NODE_ENV=development
-   ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
-   ```
+## 📋 Environment Variables
 
-4. **Start the application**
-   ```bash
-   # Development mode
-   npm run start:dev
-   
-   # Production mode
-   npm run build
-   npm run start:prod
-   ```
+```env
+# Database
+MONGO_URI=mongodb://localhost:27017/movie-hub
 
-## 📚 API Documentation
+# JWT
+JWT_SECRET=your-jwt-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
 
-The API documentation is available via Swagger UI at:
-- **Development**: http://localhost:3000/api
-- **Production**: https://your-domain.com/api
+# AWS S3
+S3_REGION=us-east-1
+S3_ACCESS_KEY_ID=your-access-key
+S3_SECRET_ACCESS_KEY=your-secret-key
+S3_BUCKET_NAME=your-bucket
 
-### Interactive Documentation Features
-
-- **Try it out**: Test endpoints directly from the browser
-- **Authentication**: JWT token management with persistent authorization
-- **Request/Response Examples**: Detailed examples for all endpoints
-- **Error Codes**: Comprehensive error documentation
-- **Schema Validation**: Automatic validation of request/response schemas
+# Application
+PORT=3000
+NODE_ENV=development
+ALLOWED_ORIGINS=http://localhost:3000
+```
 
 ## 🔐 Authentication
 
-The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require authentication.
-
-### Authentication Flow
-
-1. **Login**: POST `/auth/login`
-   ```json
-   {
-     "email": "user@example.com",
-     "password": "password123",
-     "rememberMe": false
-   }
-   ```
-
-2. **Use Access Token**: Include in Authorization header
-   ```
-   Authorization: Bearer <your-jwt-token>
-   ```
-
-3. **Refresh Token**: POST `/auth/refresh` (automatic via cookies)
-
-4. **Logout**: POST `/auth/logout`
-
-## 📖 API Endpoints
-
-### System Endpoints
-- `GET /` - Health check
-- `GET /info` - API information
-
-### Authentication Endpoints
-- `POST /auth/login` - User login
-- `POST /auth/refresh` - Refresh access token
-- `POST /auth/logout` - User logout
-- `GET /auth/profile` - Get user profile
-
-### Movie Management Endpoints
-- `GET /movies` - Get all movies (paginated)
-- `POST /movies` - Create a new movie
-- `PATCH /movies/:id` - Update a movie
-
-### File Management Endpoints
-- `POST /s3/upload-url` - Get signed URL for file upload
-- `DELETE /s3/files/:key` - Delete file from S3
-
-## 🎬 Movie Management
-
-### Movie Schema
-```typescript
+```bash
+# Login
+POST /auth/login
 {
-  title: string;           // Movie title
-  publishingYear: number;  // Release year
-  posterUrl: string;       // Poster image URL
-  createdAt: Date;         // Creation timestamp
-  updatedAt: Date;         // Last update timestamp
+  "email": "user@example.com",
+  "password": "password123"
 }
+
+# Use token
+Authorization: Bearer <jwt-token>
 ```
 
-### Pagination
-Movie endpoints support pagination:
-```
-GET /movies?page=1&limit=10
-```
+## 📚 API Endpoints
 
-Response includes:
-- `movies`: Array of movie objects
-- `page`: Current page number
-- `limit`: Items per page
-- `total`: Total number of movies
-- `totalPages`: Total number of pages
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/` | Health check |
+| `GET` | `/info` | API information |
+| `POST` | `/auth/login` | User login |
+| `GET` | `/movies` | Get movies (paginated) |
+| `POST` | `/movies` | Create movie |
+| `PATCH` | `/movies/:id` | Update movie |
+| `POST` | `/s3/upload-url` | Get S3 upload URL |
 
-## 📁 File Management
+## 🎯 Key Features
 
-### S3 Integration
-The API integrates with AWS S3 for file storage:
+### **Authentication & Security**
+- JWT-based authentication with refresh tokens
+- Password hashing with bcrypt
+- Role-based access control
+- Input validation and sanitization
 
-1. **Get Upload URL**: Request a pre-signed URL for direct S3 upload
-2. **Upload File**: Upload directly to S3 using the signed URL
-3. **Delete File**: Remove files from S3 storage
+### **Movie Management**
+- Full CRUD operations
+- Pagination support
+- Search and filtering capabilities
+- Image upload via S3
 
-### File Upload Flow
-```javascript
-// 1. Get signed URL
-const response = await fetch('/s3/upload-url', {
-  method: 'POST',
-  headers: { 'Authorization': 'Bearer <token>' },
-  body: JSON.stringify({
-    fileName: 'movie-poster.jpg',
-    fileType: 'image/jpeg'
-  })
-});
+### **File Management**
+- Secure S3 integration
+- Pre-signed URLs for direct uploads
+- File type validation
+- Automatic cleanup
 
-// 2. Upload to S3
-const { url } = await response.json();
-await fetch(url, {
-  method: 'PUT',
-  body: file,
-  headers: { 'Content-Type': 'image/jpeg' }
-});
-```
+### **Production Ready**
+- Comprehensive error handling
+- Request rate limiting
+- Security headers (Helmet)
+- CORS configuration
+- Environment-based configuration
 
-## 🔧 Development
+## 🧪 Testing
 
-### Project Structure
-```
-src/
-├── auth/           # Authentication module
-├── movies/         # Movie management module
-├── s3/            # File management module
-├── user/          # User management module
-├── common/        # Shared schemas and utilities
-├── app.controller.ts
-├── app.module.ts
-└── main.ts
-```
-
-### Available Scripts
-- `npm run start:dev` - Start development server with hot reload
-- `npm run build` - Build the application
-- `npm run start:prod` - Start production server
-- `npm run test` - Run unit tests
-- `npm run test:e2e` - Run end-to-end tests
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
-
-### Testing
 ```bash
 # Unit tests
 npm run test
@@ -213,101 +114,82 @@ npm run test
 # E2E tests
 npm run test:e2e
 
-# Test coverage
+# Coverage
 npm run test:cov
+
+# Full CI pipeline
+npm run test:ci
 ```
 
 ## 🚀 Deployment
 
-### Environment Variables
-Ensure all required environment variables are set in production:
+### Docker
+```bash
+# Build image
+npm run docker:build
 
-```env
-MONGO_URI=mongodb://your-mongo-uri
-JWT_SECRET=your-production-jwt-secret
-JWT_REFRESH_SECRET=your-production-refresh-secret
-S3_REGION=your-s3-region
-S3_ACCESS_KEY_ID=your-s3-access-key
-S3_SECRET_ACCESS_KEY=your-s3-secret-key
-S3_BUCKET_NAME=your-s3-bucket
-NODE_ENV=production
-ALLOWED_ORIGINS=https://your-frontend-domain.com
+# Run container
+npm run docker:run
 ```
 
-### Docker Deployment
-```dockerfile
-FROM node:18-alpine
+### Environment Setup
+- Set `NODE_ENV=production`
+- Configure production MongoDB
+- Set up AWS S3 credentials
+- Configure CORS origins
 
-WORKDIR /app
+## 📊 Project Structure
 
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY dist ./dist
-
-EXPOSE 3000
-
-CMD ["node", "dist/main"]
+```
+src/
+├── auth/           # JWT authentication
+├── movies/         # Movie CRUD operations
+├── s3/            # AWS S3 file management
+├── user/          # User management
+├── common/        # Shared schemas
+├── rate-limiter/  # Request throttling
+└── main.ts        # Application entry
 ```
 
-## 🔒 Security Features
+## 🔧 Development
 
-- **JWT Authentication**: Secure token-based authentication
-- **Refresh Tokens**: Automatic token refresh mechanism
-- **CORS Protection**: Configurable cross-origin resource sharing
-- **Input Validation**: Comprehensive request validation
-- **Error Handling**: Secure error responses without sensitive data
-- **Rate Limiting**: Built-in request rate limiting
-- **HTTPS**: Production-ready with SSL/TLS support
+```bash
+# Development
+npm run start:dev
 
-## 📝 API Response Format
+# Build
+npm run build
 
-### Success Response
-```json
-{
-  "status": "success",
-  "data": { ... },
-  "message": "Operation completed successfully"
-}
+# Production
+npm run start:prod
+
+# Linting
+npm run lint
+
+# Formatting
+npm run format
 ```
 
-### Error Response
-```json
-{
-  "status": "error",
-  "message": "Error description",
-  "error": "ERROR_CODE",
-  "timestamp": "2024-01-15T10:30:00.000Z"
-}
-```
+## 📈 Performance
 
-## 🤝 Contributing
+- **Database**: Indexed queries for optimal performance
+- **Caching**: Redis-ready architecture
+- **File Upload**: Direct S3 uploads (no server storage)
+- **Security**: Rate limiting and request validation
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
+## 🛡️ Security
 
-## 📄 License
+- JWT token validation
+- Password hashing
+- Input sanitization
+- CORS protection
+- Security headers
+- Rate limiting
 
-This project is licensed under the MIT License.
+## 📝 API Documentation
 
-## 🆘 Support
+Interactive documentation available at `/api` when running the application.
 
-For support and questions:
-- Check the API documentation at `/api`
-- Review the health check endpoint at `/`
-- Check the API information endpoint at `/info`
+---
 
-## 🔄 Changelog
-
-### v1.0.0
-- Initial release
-- Complete CRUD operations for movies
-- JWT authentication system
-- S3 file management integration
-- Comprehensive Swagger documentation
-- Pagination support
-- Error handling and validation
+**Built with NestJS, MongoDB, and AWS S3**
