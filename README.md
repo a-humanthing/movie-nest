@@ -10,7 +10,6 @@ A production-ready REST API for movie management built with **NestJS**, featurin
 - **File Storage**: Cloudinary with pre-signed URLs
 - **Documentation**: Swagger/OpenAPI
 - **Security**: Helmet, CORS, input validation
-- **Testing**: Jest with unit and e2e tests
 
 ## 🚀 Quick Start
 
