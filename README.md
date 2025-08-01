@@ -104,21 +104,6 @@ Authorization: Bearer <jwt-token>
 - CORS configuration
 - Environment-based configuration
 
-## 🧪 Testing
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Coverage
-npm run test:cov
-
-# Full CI pipeline
-npm run test:ci
-```
 
 ## 🚀 Deployment
 

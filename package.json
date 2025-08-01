@@ -24,7 +24,7 @@
     "clean": "rm -rf dist coverage",
     "prebuild": "npm run clean",
     "docker:build": "docker build -t movie-hub-api .",
-    "docker:run": "docker run -p 3000:3000 movie-hub-api"
+    "docker:run": "docker run -p 4001:4001 movie-hub-api"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.856.0",
